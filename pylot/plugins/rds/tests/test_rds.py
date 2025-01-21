@@ -3,7 +3,7 @@ import os
 import unittest
 from unittest.mock import patch, MagicMock
 
-from pylot.plugins.rds_lambda.main import return_parser, QueryRDS, query_rds
+from pylot.plugins.rds.main import return_parser, QueryRDS, query_rds
 
 
 class TestRDS(unittest.TestCase):
@@ -26,7 +26,7 @@ class TestRDS(unittest.TestCase):
         self.assertEqual(data, {"some": "json"})
 
     @patch('json.loads')
-    @patch('pylot.plugins.rds_lambda.main.QueryRDS')
+    @patch('pylot.plugins.rds.main.QueryRDS')
     def test_query_rds(self, mock_opensearch, mock_json_loads):
         mock_opensearch.invoke_rds_lambda.return_value = ''
         mock_opensearch.invoke_rds_lambda.return_value = ''

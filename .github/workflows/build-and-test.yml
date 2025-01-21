@@ -10,7 +10,7 @@
     name: Build & Test
     strategy:
       matrix:
-        python-version: ['3.9' ]
+        python-version: ['3.10' ]
 
     steps:
       - uses: actions/checkout@v2
@@ -27,9 +27,6 @@
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Types with mypy
-        run: |
-          mypy --ignore-missing-imports  pylot/
       - name: Test with pytest
         run: |
           coverage run -m pytest

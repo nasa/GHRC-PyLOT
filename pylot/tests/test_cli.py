@@ -8,7 +8,7 @@ class TestCli(unittest.TestCase):
 
     def test_import_plugins(self):
         plugins = import_plugins()
-        self.assertEqual(len(plugins), 3)
+        self.assertEqual(len(plugins), 2)
 
     def test_create_argparser(self):
         plugins = import_plugins()

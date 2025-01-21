@@ -1,7 +1,8 @@
+import argparse
 import inspect
 import json
 import os
-from argparse import RawTextHelpFormatter
+from argparse import RawTextHelpFormatter, SUPPRESS
 from inspect import getmembers, isfunction, ismethod
 
 import boto3
@@ -49,7 +50,7 @@ def extract_action_target_args(target_class=CumulusApi):
 
 def generate_parser(subparsers, action_target_dict):
     cumulus_api_parser = subparsers.add_parser(
-        'cumulus_api',
+        'cumulus',
         help='This plugin provides a commandline interface to the cumulus api endpoints.',
         description='Provides commandline access to the cumulus api. To see available arguments '
                     'check the cumulus documentation here: https://nasa.github.io/cumulus-api/#cumulus-api\n'
@@ -76,9 +77,6 @@ def generate_parser(subparsers, action_target_dict):
         )
         target_subparsers = action_parser.add_subparsers(title='target', dest='target', required=True)
         for target_k, argument_v in target_v.items():
-            # TODO: Remove this reversal once we have migrated to Cumulus v18.1.0+
-            if 'granule_id' in argument_v and 'collection_id' in argument_v:
-                argument_v.reverse()
             plural = ''
             for arg in argument_v:
                 plural.join(f'<{arg}> ')
@@ -104,6 +102,7 @@ def return_parser(subparsers):
 
 
 def main(action, target, output=None, **kwargs):
+    print(f'kwargs here: {kwargs}')
     capi = PyLOTHelpers().get_cumulus_api_instance()
     data_val = kwargs.get('data', None)
     if data_val:
@@ -115,7 +114,7 @@ def main(action, target, output=None, **kwargs):
             kwargs.update({'data': json.loads(data_val)})
 
     cumulus_api_lambda_return_limit = 100
-    limit = kwargs.get('limit', cumulus_api_lambda_return_limit)
+    limit = kwargs.pop('limit', cumulus_api_lambda_return_limit)
     function_name = f'{action}_{target}'
     print(f'Calling Cumulus API: {function_name}')
     api_function = getattr(capi, function_name)
@@ -143,7 +142,6 @@ def main(action, target, output=None, **kwargs):
         print(json_results)
 
     return 0
-
 
 def error_handling(results, api_function, **kwargs):
     ret = ''

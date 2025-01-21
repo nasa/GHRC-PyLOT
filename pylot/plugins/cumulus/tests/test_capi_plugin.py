@@ -2,7 +2,7 @@ import argparse
 import inspect
 import unittest
 
-from pylot.plugins.cumulus_api.main import is_action_function, extract_action_target_args, generate_parser
+from pylot.plugins.cumulus.main import is_action_function, extract_action_target_args, generate_parser
 
 
 class FakeClass:

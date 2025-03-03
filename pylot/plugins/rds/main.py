@@ -3,6 +3,7 @@ import inspect
 import json
 import os
 import pathlib
+from time import sleep
 
 import boto3
 import concurrent.futures
@@ -159,12 +160,17 @@ def apply_api_action(results, action, api_arg_dict):
     required_args = spec.args[1:]
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = []
+        count = 0
         for record in results:
             call_args = {}
             for required_arg in required_args:
                 call_args.update({required_arg: record.get(required_arg, api_arg_dict.get(required_arg))})
             print(f'Executing: {action}({call_args})')
             futures.append(executor.submit(capi_function, **call_args))
+            count += 1
+            if count == 10:
+                count = 0
+                sleep(1)
         for future in concurrent.futures.as_completed(futures):
             print(future.result())
 

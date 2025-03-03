@@ -169,6 +169,7 @@ def apply_api_action(results, action, api_arg_dict):
             futures.append(executor.submit(capi_function, **call_args))
             count += 1
             if count == 10:
+                print('Ten submissions made, sleeping for 1 second...')
                 count = 0
                 sleep(1)
         for future in concurrent.futures.as_completed(futures):

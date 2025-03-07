@@ -1,6 +1,7 @@
 import argparse
 import inspect
 import json
+import math
 import os
 import pathlib
 from time import sleep
@@ -129,6 +130,13 @@ def return_parser(subparsers):
         metavar=''
     )
     subparser.add_argument(
+        '-b', '--batch-size',
+        help='Limit the numbe of API actions that will be taken at one time.',
+        metavar='',
+        default=10,
+        type=int
+    )
+    subparser.add_argument(
         '-args', '--api-arguments',
         nargs='+',
         help='Additional arguments an API action may require and should be provides as "name_1=value_1 name_2=value_2"',
@@ -153,29 +161,68 @@ def read_json_file(file_path):
         res = json.load(infile)
     return res
 
-def apply_api_action(results, action, api_arg_dict):
+def monitor_batch(responses, capi):
+    print(f'monitoring: {responses}')
+    execution_arns = []
+    for response in responses:
+        granule_id = response.get('granuleId', '')
+        execution_url = capi.get_granule(granule_id=granule_id).get('execution', '')
+        # print(capi.get_granule(granule_id=granule_id))
+        msg = f'(granule_id, execution_arn): ({granule_id}'
+        if execution_url:
+            execution_arn = execution_url.rsplit('/')[-1]
+            execution_arns.append(execution_arn)
+            msg = f'{msg}, {execution_arn})'
+        else:
+            msg = f'{msg}, ) '
+
+        print(f'{granule_id}: {execution_url}')
+
+    sfn = boto3.client('stepfunctions')
+    done = False
+    while not done and len(execution_arns) > 0:
+        for execution_arn in execution_arns:
+            rsp = sfn.describe_execution(executionArn=execution_arn)
+            status = rsp.get('status')
+            print(f'{status}: {execution_arn}')
+            if  status == 'RUNNING':
+                done = False
+                sleep(5)
+                break
+            else:
+                done = True
+    pass
+
+
+def apply_api_action(results, action, api_arg_dict, batch_size):
     capi = PyLOTHelpers.get_cumulus_api_instance()
     capi_function = getattr(capi, action)
     spec = inspect.getfullargspec(capi_function)
     required_args = spec.args[1:]
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        count = 0
-        for record in results:
-            call_args = {}
-            for required_arg in required_args:
-                call_args.update({required_arg: record.get(required_arg, api_arg_dict.get(required_arg))})
-            print(f'Executing: {action}({call_args})')
-            futures.append(executor.submit(capi_function, **call_args))
-            count += 1
-            if count == 10:
-                print('Ten submissions made, sleeping for 1 second...')
-                count = 0
-                sleep(1)
-        for future in concurrent.futures.as_completed(futures):
-            print(future.result())
+        batch = []
+        for x in range(math.ceil(len(results))):
+            futures = []
+            i = x * batch_size
+            batch = results[i:i + batch_size]
+            for record in batch:
+                call_args = {}
+                for required_arg in required_args:
+                    call_args.update({required_arg: record.get(required_arg, api_arg_dict.get(required_arg))})
+                print(f'Executing: {action}({call_args})')
+                futures.append(executor.submit(capi_function, **call_args))
+
+            responses = []
+            for future in concurrent.futures.as_completed(futures):
+                rsp = future.result()
+                print(rsp)
+                responses.append(rsp)
+            sleep(5)
+            monitor_batch(responses, capi)
+
 
 def main(**kwargs):
+    print(kwargs)
     if 'list_cumulus_api_methods' in kwargs:
         list_methods(kwargs['list_cumulus_api_methods'])
 
@@ -197,6 +244,6 @@ def main(**kwargs):
                     key_val_list = arg.split('=')
                     api_arg_dict.update({key_val_list[0]: key_val_list[1]})
 
-            apply_api_action(res, action, api_arg_dict)
+            apply_api_action(res, action, api_arg_dict, kwargs.get('batch_size'))
 
     return 0

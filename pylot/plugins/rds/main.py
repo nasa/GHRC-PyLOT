@@ -69,13 +69,20 @@ def query_rds(query, results='query_results.json', **kwargs):
 
     rsp = rds.invoke_rds_lambda(query)
     ret_dict = json.loads(rsp.get('Payload').read().decode('utf-8'))
+    if 'exception' in ret_dict:
+        print('There was an exception during the lambda execution')
+        print(f'Lambda Stack Trace:\n{ret_dict.get("stack_trace", "")}')
+        raise Exception('RDS Lambda had an exception.')
+
+    if 'query' in ret_dict:
+        query = ret_dict.get('query')
+        with open(f'{os.getcwd()}/executed_query.sql', 'w+') as query_file:
+            query_file.write(query)
 
     # Download results from S3
     file = rds.download_file(bucket=ret_dict.get('bucket'), key=ret_dict.get('key'), results=results)
-    print(
-        f'{ret_dict.get("count")} {query.get("rds_config").get("records")} records obtained: '
-        f'{os.getcwd()}/{results}'
-    )
+    print(f'{ret_dict.get("count", "0")} {ret_dict.get("records", "records")} obtained: {os.getcwd()}/{results}')
+
     return file
 
 

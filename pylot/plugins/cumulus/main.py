@@ -123,7 +123,7 @@ def main(action, target, output=None, **kwargs):
         api_response = api_function(**kwargs)
         if isinstance(api_response, dict) and 'results' in api_response:
             api_response = error_handling(api_response, api_function, **kwargs)
-            kwargs.update({'searchContext': api_response.get('meta', {}).get('searchContext', None)})
+            kwargs.update({'page': api_response.get('meta', {}).get('page', 1) + 1})
             record_count = api_response.get('meta', {}).get('count', 0)
             api_results = api_response.get('results', [])            
             results.extend(api_results[:limit - (len(results))])

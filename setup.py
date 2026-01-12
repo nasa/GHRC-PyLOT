@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
 
-__version__ = "1.0.5"
+__version__ = "3.1.0"
 
 description = """
 Python cLoud Operations Tool (PyLOT) is a python command line tool designed to
@@ -22,9 +22,10 @@ install_requires = [x.strip() for x in all_reqs]
 setup(
     name='cloud_operations_tool',
     version=__version__,
-    author='Abdelhak Marouane (am0089@uah.edu), Michael Hall (mlh0079@uah.edu)',
+    author='Abdelhak Marouane, Michael Hall',
+    maintainer='GHRC DAAC Development Team',
     description=description,
-    url='https://github.com/ghrcdaac/cloud-operations-tool-py',
+    url='https://github.com/nasa/GHRC-PyLOT',
     license='Apache 2.0',
     classifiers=[
         'Framework :: Pytest',
@@ -32,7 +33,7 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: Freeware',
-        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.12',
     ],
     entry_points={
         'console_scripts': ['pylot=pylot.pylot_cli:main']

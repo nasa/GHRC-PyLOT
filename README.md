@@ -1,5 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/cloud-operations-tool-py/badge.svg)](https://coveralls.io/github/ghrcdaac/cloud-operations-tool-py)
-![Build Status](https://github.com/ghrcdaac/cloud-operations-tool-py/actions/workflows/build-and-test.yml/badge.svg?branch=main)
+[![Build & Test](https://github.com/nasa/GHRC-PyLOT/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/nasa/GHRC-PyLOT/actions/workflows/build-and-test.yml)
 <p align="center">
 <img src="img/pylot.svg"
      alt="pylot" width=50%/>
@@ -32,19 +31,19 @@ This tool will prevent reinventing the wheel, since a solution for a common prob
 ```
 
 ## Prerequisites
-Python 3.8+
+Python 3.12+
 
 ## Installation
 ```jsunicoderegexp
-pip install https://github.com/ghrcdaac/cloud-operations-tool-py/archive/refs/tags/v1.0.0.zip
+pip install https://github.com/nasa/GHRC-PyLOT/archive/refs/tags/v3.1.0.zip
 ```
 ## Set up
 ```bash
 Copy file
-https://github.com/ghrcdaac/cloud-operations-tool-py/blob/main/env.sh.example
+https://github.com/nasa/GHRC-PyLOT/blob/main/env.sh.example
 Define environment variable and source the file
 ```
 
 ## 📖 Documentation
-- ❓[HowTo](https://ghrcdaac.github.io/cloud-operations-tool-py/howto)
-- 🚀 Release note [v1.0.0](https://github.com/ghrcdaac/cloud-operations-tool-py/releases/tag/v1.0.0).
+- ❓[HowTo](https://nasa.github.io/GHRC-PyLOT/howto)
+- 🚀 Release note [v3.1.0](https://github.com/nasa/GHRC-PyLOT/releases/tag/v3.1.0).

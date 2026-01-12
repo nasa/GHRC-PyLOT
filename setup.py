@@ -23,7 +23,7 @@ setup(
     name='cloud_operations_tool',
     version=__version__,
     author='Abdelhak Marouane, Michael Hall',
-    maintainer='GHRC DAAC Development Team'
+    maintainer='GHRC DAAC Development Team',
     description=description,
     url='https://github.com/nasa/GHRC-PyLOT',
     license='Apache 2.0',

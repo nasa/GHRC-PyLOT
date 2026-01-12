@@ -35,7 +35,7 @@ Python 3.12+
 
 ## Installation
 ```jsunicoderegexp
-pip install https://github.com/nasa/GHRC-PyLOT/archive/refs/tags/v3.0.3.zip
+pip install https://github.com/nasa/GHRC-PyLOT/archive/refs/tags/v3.1.0.zip
 ```
 ## Set up
 ```bash

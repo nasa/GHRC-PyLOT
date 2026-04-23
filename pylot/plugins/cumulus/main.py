@@ -149,7 +149,7 @@ def error_handling(results, api_function, **kwargs):
         error_message = results.get('message', '')
         if 'Member must have length less than or equal to 8192' in error_message:
             print(f'Handling error: {error_message}')
-            cli = boto3.client('s3')
+            cli = boto3.client('s3', region_name=os.getenv('AWS_REGION'))
             stack_prefix = os.getenv('STACK_PREFIX')
             if not stack_prefix:
                 raise ValueError('The STACK_PREFIX environment variable has not been set')
@@ -188,7 +188,7 @@ def error_handling(results, api_function, **kwargs):
                     Key=dgw
                 )
 
-                ec = boto3.client('events')
+                ec = boto3.client('events', region_name=os.getenv('AWS_REGION'))
                 rule_name = f'{stack_prefix}-custom-{kwargs.get("data").get("name")}'
                 res = ec.list_targets_by_rule(Rule=rule_name)
                 print('Updating rule targets HelloWorldWorkflow -> DiscoverGranules')

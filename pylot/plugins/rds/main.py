@@ -26,7 +26,7 @@ class QueryRDS:
 
     def invoke_rds_lambda(self, query_data, lambda_client=None, **kwargs):
         if not lambda_client:
-            lambda_client = boto3.client('lambda')
+            lambda_client = boto3.client('lambda', region_name=os.getenv('AWS_REGION'))
         lambda_arn = os.getenv('RDS_LAMBDA_ARN')
         if not lambda_arn:
             raise ValueError('The ARN for the RDS lambda is not defined. Provide it as an environment variable.')
@@ -46,7 +46,7 @@ class QueryRDS:
 
     def download_file(self, bucket, key, results, s3_client=None):
         if not s3_client:
-            s3_client = boto3.client('s3')
+            s3_client = boto3.client('s3', region_name=os.getenv('AWS_REGION'))
         print('Downloading query results...')
         s3_client.download_file(
             Bucket=bucket,
@@ -185,7 +185,7 @@ def monitor_batch(responses, capi):
 
         print(f'{granule_id}: {execution_url}')
 
-    sfn = boto3.client('stepfunctions')
+    sfn = boto3.client('stepfunctions', region_name=os.getenv('AWS_REGION'))
     done = False
     while not done and len(execution_arns) > 0:
         for execution_arn in execution_arns:

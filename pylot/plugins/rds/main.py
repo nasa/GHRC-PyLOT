@@ -1,7 +1,6 @@
 import argparse
 import inspect
 import json
-import math
 import os
 import pathlib
 from time import sleep
@@ -202,15 +201,15 @@ def monitor_batch(responses, capi):
 
 
 def apply_api_action(results, action, api_arg_dict, batch_size):
+    if batch_size <= 0:
+        raise ValueError('batch_size must be greater than zero')
     capi = PyLOTHelpers.get_cumulus_api_instance()
     capi_function = getattr(capi, action)
     spec = inspect.getfullargspec(capi_function)
     required_args = spec.args[1:]
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        batch = []
-        for x in range(math.ceil(len(results))):
+        for i in range(0, len(results), batch_size):
             futures = []
-            i = x * batch_size
             batch = results[i:i + batch_size]
             for record in batch:
                 call_args = {}
